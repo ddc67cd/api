@@ -36,16 +36,22 @@ function setup() {
 
     // perform interpolations asynchronously for all relevant hits
     var timer = (new Date()).getTime();
-    async.map( res.data, bound, function( err, results ){
+    async.map(res.data, bound, (err, results) => {
 
       // update res.data with the mapped values
-      if( !err ){
+      if (!err) {
         res.data = results;
       }
 
       // log the execution time, continue
-      logger.info( '[interpolation] [took]', (new Date()).getTime() - timer, 'ms' );
+      logger.info('[interpolation] [took]', (new Date()).getTime() - timer, 'ms');
       next();
+    });
+
+    res.data = res.data.sort((a, b) => {
+      if (a.layer === 'address' && b.layer !== 'address') { return -1; }
+      if (a.layer !== 'address' && b.layer === 'address') { return 1; }
+      return 0;
     });
   };
 
