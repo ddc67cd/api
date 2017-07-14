@@ -38,6 +38,93 @@ function setup(peliasConfig, basePath) {
  * @returns {*}
  */
 function convertToGeocodeJSON(req, res, next, opts) {
+  res.body = {
+    results: [],
+    status: "OK",
+  };
+
+  addMessages(req, 'warnings', res.body);
+  addMessages(req, 'errors', res.body);
+
+  for (var i = 0, len = res.data?res.data.length:0; i < len; i++) {
+    var address = res.data[i];
+    doc = {
+      "address_components" : [
+        {
+          "long_name" : address.address_parts?address.address_parts.number: 0,
+          "short_name" : address.address_parts?address.address_parts.number: 0,
+          "types" : [ "street_number" ]
+        },
+        {
+          "long_name" : address.address_parts?address.address_parts.street: 0,
+          "short_name" : address.address_parts?address.address_parts.street: 0,
+          "types" : [ "route" ]
+        },
+        //{
+        //  "long_name" : "Tsentralnyy administrativnyy okrug",
+        //  "short_name" : "Tsentralnyy administrativnyy okrug",
+        //  "types" : [ "political", "sublocality", "sublocality_level_1" ]
+        //},
+        //{
+        //  "long_name" : "Moskva",
+        //  "short_name" : "Moskva",
+        //  "types" : [ "locality", "political" ]
+        //},
+        //{
+        //  "long_name" : "gorod Moskva",
+        //  "short_name" : "g. Moskva",
+        //  "types" : [ "administrative_area_level_2", "political" ]
+        //},
+        //{
+        //  "long_name" : "Moscow",
+        //  "short_name" : "Moscow",
+        //  "types" : [ "administrative_area_level_1", "political" ]
+        //},
+        //{
+        //  "long_name" : "Russia",
+        //  "short_name" : "RU",
+        //  "types" : [ "country", "political" ]
+        //},
+        //{
+        //  "long_name" : "125009",
+        //  "short_name" : "125009",
+        //  "types" : [ "postal_code" ]
+        //}
+      ],
+      //"raw": address,
+      "formatted_address" : address.name.default,
+      "geometry" : {
+        "location" : {
+          "lat" : address.center_point.lat,
+          "lng" : address.center_point.lon
+        },
+        "location_type" : "ROOFTOP",
+      },
+      "place_id" : address.source_id,
+      "types" : [ "street_address" ]
+    }
+
+    if (address.bounding_box) {
+      console.log('bbox is ', address.bounding_box);
+      doc.geometry.viewport = {
+          "northeast" : {
+            "lat" : address.bounding_box.upperLeft.lat,
+            "lng" : address.bounding_box.lowerRight.lon,
+          },
+          "southwest" : {
+            "lat" : address.bounding_box.lowerRight.lat,
+            "lng" : address.bounding_box.upperLeft.lon
+          }
+      }
+    }
+
+    res.body.results.push(doc);
+  }
+
+  next();
+
+/*
+
 
   res.body = { geocoding: {} };
 
@@ -76,6 +163,7 @@ function convertToGeocodeJSON(req, res, next, opts) {
   extend(res.body, geojsonify(req.clean, res.data || []));
 
   next();
+*/
 }
 
 function addMessages(req, msgType, geocoding) {

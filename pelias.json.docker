@@ -1,18 +1,62 @@
 {
   "esclient": {
-    "hosts": [
-      {
-        "env": "production",
-        "protocol": "http",
-        "host": "pelias-data-container",
-        "port": 9200
-      },
-      {
-        "env": "production",
-        "protocol": "http",
-        "host": "pelias-data-container",
-        "port": 9300
+    "apiVersion": "1.7",
+    "keepAlive": true,
+    "requestTimeout": "120000", "hosts": [{
+      "env": "production",
+      "protocol": "http",
+      "host": "es.service.consul",
+      "port": 9200
+    }],
+    "log": [{
+      "type": "stdio",
+      "level": [ "error", "warning" ]
+    }]
+  },
+  "dbclient": {
+    "statFrequency": 10000
+  },
+  "api": {
+    "textAnalyzer": "libpostal",
+    "accessLog": "common",
+    "host": "https://geocoding.naviaddress.com/",
+    "version": "1.0",
+    "indexName": "lookup"
+  },
+  "schema": {
+    "indexName": "lookup"
+  },
+  "logger": {
+    "level": "debug",
+    "timestamp": true,
+    "colorize": true
+  },
+  "acceptance-tests": {
+    "endpoints": {
+      "local": "http://localhost:3100/v1/",
+      "dev-cached": "http://pelias.dev.mapzen.com.global.prod.fastly.net/v1/",
+      "dev": "http://pelias.dev.mapzen.com/v1/",
+      "prod": "http://search.mapzen.com/v1/",
+      "prod-uncached": "http://pelias.mapzen.com/v1/",
+      "prodbuild": "http://pelias.prodbuild.mapzen.com/v1/"
+    }
+  },
+  "imports": {
+    "openstreetmap": {
+      "datapath": "/opt/data",
+      "adminLookup": false,
+      "leveldbpath": "/tmp/leveldb/",
+      "import": [{
+        "filename": "planet-170206.osm.pbf"
+      }]
+    }
+  },
+  "elasticsearch": {
+    "settings": {
+      "index": {
+        "number_of_replicas": "1",
+        "number_of_shards": "5"
       }
-    ]
+    }
   }
 }

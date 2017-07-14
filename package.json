@@ -61,10 +61,11 @@
     "pelias-mock-logger": "^1.0.1",
     "pelias-model": "4.5.1",
     "pelias-query": "8.14.0",
-    "pelias-text-analyzer": "1.7.2",
+    "pelias-text-analyzer": "1.8.0",
+    "pg": "^6.4.0",
     "predicates": "^1.0.1",
-    "retry": "^0.10.1",
     "request": "^2.79.0",
+    "retry": "^0.10.1",
     "stats-lite": "^2.0.4",
     "superagent": "^3.2.1",
     "through2": "^2.0.3"
